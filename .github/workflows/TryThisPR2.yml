@@ -19,7 +19,8 @@ jobs:
   
       - name: Generate comment
         id: generate-comment
-        run: deno eval '
+        run: |
+          deno eval '
           const context = JSON.parse(await Deno.readTextFile("context.json"));
           console.log(context);
           

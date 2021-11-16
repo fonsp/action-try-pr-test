@@ -1,0 +1,55 @@
+name: "Automatic PR comment: Try this PR!"
+
+on:
+  pull_request:
+
+jobs:
+  comment:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: denoland/setup-deno@v1
+        with:
+          deno-version: "1.16.1"
+      - uses: actions/github-script@v5
+        with:
+          github-token: ${{secrets.GITHUB_TOKEN}}
+          script: |
+            const fs = require("fs")
+            fs.writeFileSync("context.json", JSON.stringify(context))
+  
+      - name: Generate comment
+        id: generate-comment
+        run: deno eval '
+          const context = JSON.parse(await Deno.readTextFile("context.json"));
+          console.log(context);
+          
+          import reduce from "https://cdn.jsdelivr.net/gh/lodash/lodash@4.17.21-es/reduce.js";
+          const result = reduce([1,2,3], (a,b) => a+b);
+          console.log(result);
+          
+          let long_result = `
+            ${""}## Try this Pull Request!
+            Open Julia and type
+            \`\`\`jl
+            julia> import Pkg
+            julia> Pkg.activate(temp=true)
+            julia> Pkg.add(url="${context.payload.pull_request.head.repo.html_url}", rev="${context.payload.pull_request.head.ref}")
+            julia> using ${context.payload.repository.name.replace(/\.jl$/,"")}
+            \`\`\`
+            `;
+          
+          await Deno.writeTextFile("comment.txt", long_result)
+          '
+      - uses: actions/github-script@v5
+        with:
+          github-token: ${{secrets.GITHUB_TOKEN}}
+          script: |
+            const fs = require("fs")
+            const comment = fs.readFileSync("comment.txt").toString()
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            })
+  

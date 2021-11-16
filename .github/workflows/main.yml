@@ -29,15 +29,15 @@ jobs:
           console.log(result);
           
           let long_result = `
-          ${""}## Try this Pull Request!
-          Open Julia and type:
-          \`\`\`jl
-          julia> import Pkg
-          julia> Pkg.activate(temp=true)
-          julia> Pkg.add(url="${context.payload.pull_request.head.repo.html_url}", rev="${context.payload.pull_request.head.ref}")
-          julia> using ${context.payload.repository.name.replace(/\.jl$/,"")}
-          \`\`\`
-          `;
+            ${""}## Try this Pull Request!
+            Open Julia and type
+            \`\`\`jl
+            julia> import Pkg
+            julia> Pkg.activate(temp=true)
+            julia> Pkg.add(url="${context.payload.pull_request.head.repo.html_url}", rev="${context.payload.pull_request.head.ref}")
+            julia> using ${context.payload.repository.name.replace(/\.jl$/,"")}
+            \`\`\`
+            `;
           let value = long_result.replace(/%/g, `%25`)
             .replace(/\r/g, `%0D`)
             .replace(/\n/g, `%0A`);

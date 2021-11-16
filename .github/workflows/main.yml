@@ -11,29 +11,25 @@ jobs:
       - uses: denoland/setup-deno@v1
         with:
           deno-version: "1.16.1"
-      - run: deno eval '
-          import reduce from "https://cdn.jsdelivr.net/gh/lodash/lodash@4.17.21-es/reduce.js"
-          const result = reduce([1,2,3], (a,b) => a+b)
-          console.log(result)
+      - name: Generate comment
+        id: generate-comment
+        run: deno eval '
+          import reduce from "https://cdn.jsdelivr.net/gh/lodash/lodash@4.17.21-es/reduce.js";
+          const result = reduce([1,2,3], (a,b) => a+b);
+          console.log(result);
           
           let long_result = `
           hello!!
           
           i am
           ${result} cool
-          `
+          `;
           let value = long_result.replace(/%/g, `%25`)
             .replace(/\r/g, `%0D`)
-            .replace(/\n/g, `%0A`)
-          let name = "comment"
-          console.log(`::set-output name=${name}::${value}`)
+            .replace(/\n/g, `%0A`);
+          let name = "comment";
+          console.log(`::set-output name=${name}::${value}`);
           
           '
-      - uses: actions/github-script@v5
-        with:
-          github-token: ${{secrets.GITHUB_TOKEN}}
-          script: |
-            const r = require("./hello.js")
-            console.log(r)
-            console.log(r.f)
+      - run: echo "The selected color is ${{ steps.generate_color.outputs.comment }}"
   

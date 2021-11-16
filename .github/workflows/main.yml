@@ -38,20 +38,15 @@ jobs:
             julia> using ${context.payload.repository.name.replace(/\.jl$/,"")}
             \`\`\`
             `;
-          let value = long_result.replace(/%/g, `%25`)
-            .replace(/\r/g, `%0D`)
-            .replace(/\n/g, `%0A`);
-          let name = "comment";
-          console.log(`::set-output name=${name}::${value}`);
           
+          await Deno.writeTextFile("comment.txt", long_result)
           '
-      - run: echo "The selected color is ${{ steps.generate-comment.outputs.comment }}"
       - uses: actions/github-script@v5
         with:
           github-token: ${{secrets.GITHUB_TOKEN}}
           script: |
             const fs = require("fs")
-            const comment = fs.readFileSync("./comment.txt").toString()
+            const comment = fs.readFileSync("comment.txt").toString()
             github.rest.issues.createComment({
               issue_number: context.issue.number,
               owner: context.repo.owner,

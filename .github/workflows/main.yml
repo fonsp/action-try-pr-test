@@ -12,7 +12,7 @@ jobs:
         with:
           github-token: ${{secrets.GITHUB_TOKEN}}
           script: |
-            const {default: reduce} = await import("https://cdn.jsdelivr.net/gh/lodash/lodash@4.17.21-es/reduce.js")
-            console.log(reduce)
-            console.log(reduce([1,2,3], (a,b) => a+b))
+            const r = require("./hello.js")
+            console.log(r)
+            console.log(r.f)
   

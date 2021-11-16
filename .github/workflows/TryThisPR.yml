@@ -17,7 +17,7 @@ jobs:
               repo: context.repo.repo,
               body: `
               ## Try this Pull Request!
-              Open Julia, and type:
+              Open Julia and type:
               \`\`\`jl
               julia> import Pkg
               julia> Pkg.activate(temp=true)

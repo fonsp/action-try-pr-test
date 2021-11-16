@@ -11,6 +11,8 @@ jobs:
         with:
           github-token: ${{secrets.GITHUB_TOKEN}}
           script: |
+            import("https://cdn.jsdelivr.net/gh/lodash/lodash@4.17.21-es/reduce.js")
+            
             github.rest.issues.createComment({
               issue_number: context.issue.number,
               owner: context.repo.owner,

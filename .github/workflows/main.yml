@@ -31,5 +31,5 @@ jobs:
           console.log(`::set-output name=${name}::${value}`);
           
           '
-      - run: echo "The selected color is ${{ steps.generate_color.outputs.comment }}"
+      - run: echo "The selected color is ${{ steps.generate-comment.outputs.comment }}"
   

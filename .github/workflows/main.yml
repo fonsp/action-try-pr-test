@@ -1,0 +1,18 @@
+name: "Automatic PR comment: Try this PR!"
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  comment:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/github-script@v5
+        with:
+          github-token: ${{secrets.GITHUB_TOKEN}}
+          script: |
+            const {default: reduce} = await import("https://cdn.jsdelivr.net/gh/lodash/lodash@4.17.21-es/reduce.js")
+            console.log(reduce)
+            console.log(reduce([1,2,3], (a,b) => a+b))
+  

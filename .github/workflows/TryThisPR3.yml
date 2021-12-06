@@ -22,7 +22,7 @@ jobs:
         run: |
           deno eval '
           const context = JSON.parse(await Deno.readTextFile("context.json"));
-          import { generate_comment } from "https://cdn.jsdelivr.net/gh/fonsp/action-try-pr-test@0.1.0/generate.mjs";
+          import { generate_comment } from "https://cdn.jsdelivr.net/gh/fonsp/action-try-pr-test@0.1.1/generate.mjs";
           await Deno.writeTextFile("comment.txt", await generate_comment(context));
           '
       - uses: actions/github-script@v5

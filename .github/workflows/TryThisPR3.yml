@@ -1,0 +1,68 @@
+name: "Automatic PR comment: Try this PR!"
+
+on:
+  pull_request:
+    types: [opened]
+
+jobs:
+  comment:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: denoland/setup-deno@v1
+        with:
+          deno-version: "1.16.1"
+      - uses: actions/github-script@v5
+        with:
+          github-token: ${{secrets.GITHUB_TOKEN}}
+          script: |
+            const fs = require("fs")
+            fs.writeFileSync("context.json", JSON.stringify(context))
+  
+      - name: Generate comment
+        id: generate-comment
+        run: |
+          deno eval '
+          const context = JSON.parse(await Deno.readTextFile("context.json"));
+          console.log(context);
+          
+          import reduce from "https://cdn.jsdelivr.net/gh/lodash/lodash@4.17.21-es/reduce.js";
+          const result = reduce([1,2,3], (a,b) => a+b);
+          console.log(result);
+          
+          let codes = [
+            `import Pkg`,
+            `Pkg.activate(temp=true)`,
+            `Pkg.add(url="${context.payload.pull_request.head.repo.html_url}", rev="${context.payload.pull_request.head.ref}")`,
+            `using ${context.payload.repository.name.replace(/\.jl$/,"")}`,
+          ]
+          
+          let notebook_file = `### A Pluto.jl notebook ###\n# v0.17.2\n\nusing Markdown\nusing InteractiveUtils\n\n# ╔═╡ 0951578e-56e7-11ec-13a1-bd41c3606868\nbegin\n${
+            codes.map(s => "\t" + s).join("\n")
+          }\nend\n\n# ╔═╡ fdc0bf81-b4ff-4e8b-b509-cf5972e2918e\n\n\n# ╔═╡ Cell order:\n# ╠═0951578e-56e7-11ec-13a1-bd41c3606868\n# ╠═fdc0bf81-b4ff-4e8b-b509-cf5972e2918e`
+          let binder_url = `https://binder.plutojl.org/open?url=${encodeURIComponent(encodeURIComponent("data:;base64,"+btoa(notebook_file)))}`
+          
+          let long_result = `
+          ## Try this Pull Request!
+          Open Julia and type:
+          \`\`\`jl
+          ${codes.map(s => "julia> " + s).join("\n")}
+          \`\`\`
+          
+          *Or run this code in your browser: [![Run with binder](https://mybinder.org/badge_logo.svg)](${binder_url})*
+          `;
+          
+          await Deno.writeTextFile("comment.txt", long_result);
+          '
+      - uses: actions/github-script@v5
+        with:
+          github-token: ${{secrets.GITHUB_TOKEN}}
+          script: |
+            const fs = require("fs")
+            const comment = fs.readFileSync("comment.txt").toString()
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            })
+  

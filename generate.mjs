@@ -1,4 +1,4 @@
-export const generate_comment = (context) => {
+export const generate_comment = async (context) => {
   let codes = [
     `import Pkg`,
     `Pkg.activate(temp=true)`,

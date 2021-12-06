@@ -39,7 +39,13 @@ jobs:
           let notebook_file = `### A Pluto.jl notebook ###\n# v0.17.2\n\nusing Markdown\nusing InteractiveUtils\n\n# ╔═╡ 0951578e-56e7-11ec-13a1-bd41c3606868\nbegin\n${
             codes.map(s => "\t" + s).join("\n")
           }\nend\n\n# ╔═╡ fdc0bf81-b4ff-4e8b-b509-cf5972e2918e\n\n\n# ╔═╡ Cell order:\n# ╠═0951578e-56e7-11ec-13a1-bd41c3606868\n# ╠═fdc0bf81-b4ff-4e8b-b509-cf5972e2918e`
-          let binder_url = `https://binder.plutojl.org/open?url=${encodeURIComponent(encodeURIComponent("data:;base64,"+btoa(notebook_file)))}`
+          
+          const base64url = await new Promise((r) => {
+              const reader = new FileReader()
+              reader.onload = () => r(reader.result)
+              reader.readAsDataURL(new Blob([notebook_file]))
+          })
+          let binder_url = `https://binder.plutojl.org/open?url=${encodeURIComponent(encodeURIComponent(base64url))}`
           
           let long_result = `
           ## Try this Pull Request!
